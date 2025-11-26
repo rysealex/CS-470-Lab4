@@ -1,3 +1,5 @@
+// Alex Ryse - CS470 Lab4
+
 #ifndef LIBFS_H
 #define LIBFS_H
 
@@ -18,6 +20,11 @@ typedef struct {
 } FileEntry;
 
 // Function prototypes
-// Build your code
+int fileCreate(const char *filename);
+int fileOpen(const char *filename);
+int fileWrite(int file_index, const char *data);
+int fileRead(int file_index, char *buffer, int buffer_size);
+int fileClose(int file_index);
+int fileDelete(const char *filename);
 
-#endif // LIBFS_H
+#endif
