@@ -93,11 +93,42 @@ int fileWrite(int file_index, const char *data) {
 // Read data from a file
 int fileRead(int file_index, char *buffer, int buffer_size) {
 
+    // check if file is currently opened
+    if (file_table[file_index].is_open == 0) {
+        printf("Error: file '%s' is not open.\n", file_table[file_index].filename);
+        return -1;
+    }
+
+    // read contents from the file
+    FILE *fptr = fopen(file_table[file_index].filename, "r"); // open new file pointer in read mode
+    // error checking if file pointer failed
+    if (!fptr) {
+        printf("Error: Failed to open file '%s' for reading.\n", file_table[file_index].filename);
+        return -1;
+    }
+    // read and print each line of the file
+    while (fgets(buffer, buffer_size, fptr) != NULL) {
+        printf("%s", buffer);
+    }
+    fclose(fptr); // close the file pointer after
+
+    printf("Data read from file '%s' successfully.\n", file_table[file_index].filename);
+
     return 0;
 }
 
 // Close a file
 int fileClose(int file_index) {
+
+    // check if file is not open
+    if (file_table[file_index].is_open == 0) {
+        printf("Error: file '%s' is not open.\n", file_table[file_index].filename);
+        return -1;
+    } else {
+        // if file is open, then set is open to closed
+        file_table[file_index].is_open = 0;
+        printf("File: '%s' closed successfully.\n", file_table[file_index].filename);
+    }
 
     return 0;
 }
@@ -105,5 +136,36 @@ int fileClose(int file_index) {
 // Delete a file
 int fileDelete(const char *filename) {
 
-    return 0;
+    int file_index = -1;
+
+    // find the file index of the file from the file table
+    for (int i = 0; i < file_count; i++) {
+        if (strcmp(file_table[i].filename, filename) == 0) {
+            file_index = i; // store the index of the file from the file table
+            break;
+        }
+    }
+
+    // check if the file was not found
+    if (file_index == -1) {
+        printf("Error: File '%s' not found.\n", filename);
+        return -1;
+    }
+
+    // delete the file from the OS file system
+    if (remove(filename) == 0) {
+        printf("File: '%s' deleted successfully.\n", filename);
+    } else {
+        printf("Error: Failed to delete '%s' from the OS file system.\n", filename);
+        return -1;
+    }
+
+    // remove the file from the file table
+    for (int i = file_index; i < file_count - 1; i++) {
+        // shift all subsequent file entries up one position in the file table
+        file_table[i] = file_table[i+1];
+    }
+    file_count--;
+
+    return -1;
 }

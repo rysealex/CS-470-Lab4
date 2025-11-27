@@ -34,7 +34,7 @@ int main() {
                           "I hope you enjoy using my project!";
     int file_index = -1;  // Track the currently open file
     int choice;
-    // char buffer[MAX_FILE_SIZE];
+    char buffer[MAX_FILE_SIZE];
 
     while (1) {
         displayMenu();
@@ -80,15 +80,45 @@ int main() {
                 break;
 
             case 4:  // Read from a file 
-                printf("%d\n", choice);
+                // check if a file is open or not
+                if (file_index == -1) {
+                    printf("Error: No file is open. Please open a file to continue.\n");
+                } else {
+                    printf("Reading content from file '%s'...\n", filename);
+                    // attempt to write to the file
+                    if (fileRead(file_index, buffer, sizeof(buffer)) != 0) {
+                        printf("Error reading from file.\n");
+                    }
+                }
+                waitForUser();
                 break;
 
             case 5:  // Close a file
-                printf("%d\n", choice);
+                // check if a file is open or not
+                if (file_index == -1) {
+                    printf("Error: No file is open. Please open a file to continue.\n");
+                } else {
+                    // attempt to close the file
+                    file_index = fileClose(file_index);
+                    if (file_index == -1) {
+                        printf("Error closing file.\n");
+                    }
+                    file_index = -1; // reset the open file index
+                }
+                waitForUser();
                 break;
 
             case 6:  // Delete a file
-                printf("%d\n", choice);
+                printf("Enter the filename to delete: ");
+                fgets(filename, MAX_FILENAME, stdin);
+                filename[strcspn(filename, "\n")] = '\0'; // remove newline character
+                // attempt to delete the file
+                file_index = fileDelete(filename);
+                if (file_index == -1) {
+                    printf("Error deleting file.\n");
+                }
+                file_index = -1; // reset the open file index
+                waitForUser();
                 break;
 
             case 7:  // Exit
