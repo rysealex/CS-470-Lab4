@@ -167,5 +167,5 @@ int fileDelete(const char *filename) {
     }
     file_count--;
 
-    return -1;
+    return 0;
 }
